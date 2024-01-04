@@ -14,21 +14,23 @@
             using var db = new BookShopContext();
             DbInitializer.ResetDatabase(db);
 
-            //Task 1
+            //Task 2 - Age Restriction
             /*string command = Console.ReadLine();
-            string resultTask1 = GetBooksByAgeRestriction(db, command);
-            Console.WriteLine(resultTask1);*/
+            string resultTask2 = GetBooksByAgeRestriction(db, command);
+            Console.WriteLine(resultTask2);*/
 
-            //Task 2
-            /*string resultTask2 = GetGoldenBooks(db);
-            Console.WriteLine(resultTask2);
+            //Task 3 - Golden Books
+            /*string resultTask3 = GetGoldenBooks(db);
+            Console.WriteLine(resultTask3);
 */
 
-            //Task 3
-            /*string resultTask3 = GetBooksByPrice(db);
-            Console.WriteLine(resultTask3);*/
+            //Task 4 - Books By Price
+            /*string resultTask4 = GetBooksByPrice(db);
+            Console.WriteLine(resultTask4);*/
 
-            //Task 4
+            //Task 5 - Not Released In
+            string resultTask5 = GetBooksNotReleasedIn(db, int.Parse(Console.ReadLine()));
+            Console.WriteLine(resultTask5);
         }
         public static string GetBooksByAgeRestriction(BookShopContext context, string command)
         {
@@ -72,6 +74,20 @@
             foreach (var book in books.OrderByDescending(b => b.Price))
             {
                 sb.AppendLine(book.Title + " - "+ "$" + $"{book.Price:f2}");
+            }
+            return sb.ToString().TrimEnd();
+        }
+
+        public static string GetBooksNotReleasedIn(BookShopContext context, int year)
+        {
+            var books = context.Books
+                .Where(b => (b.ReleaseDate).Value.Year!=year)
+                .ToArray();
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var book in books.OrderBy(b => b.BookId))
+            {
+                sb.AppendLine(book.Title);
             }
             return sb.ToString().TrimEnd();
         }
