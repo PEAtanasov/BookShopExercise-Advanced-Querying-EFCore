@@ -1,8 +1,10 @@
 ﻿namespace BookShop
 {
+    using BookShop.Models;
     using BookShop.Models.Enums;
     using Data;
     using Initializer;
+    using System.Linq;
     using System.Runtime.Serialization;
     using System.Text;
     using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -29,8 +31,13 @@
             Console.WriteLine(resultTask4);*/
 
             //Task 5 - Not Released In
-            string resultTask5 = GetBooksNotReleasedIn(db, int.Parse(Console.ReadLine()));
-            Console.WriteLine(resultTask5);
+            /*string resultTask5 = GetBooksNotReleasedIn(db, int.Parse(Console.ReadLine()));
+            Console.WriteLine(resultTask5);*/
+
+            //Task 6 - Book Titles by Category
+            string resultTask6 = GetBooksByCategory(db,Console.ReadLine());
+            Console.WriteLine(resultTask6);
+
         }
         public static string GetBooksByAgeRestriction(BookShopContext context, string command)
         {
@@ -88,6 +95,28 @@
             foreach (var book in books.OrderBy(b => b.BookId))
             {
                 sb.AppendLine(book.Title);
+            }
+            return sb.ToString().TrimEnd();
+        }
+
+        public static string GetBooksByCategory(BookShopContext context, string input)
+        {
+            string[] inputCategories = input
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .Select(c=>c.ToLower())
+                .ToArray();
+            var bookTitles = context.Books
+                .Where(b => b.BookCategories
+                       .Any(bc => inputCategories.Contains(bc.Category.Name.ToLower())))
+                .OrderBy(b=>b.Title)
+                .Select(b=>b.Title)
+                .ToArray();
+           
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var book in bookTitles)
+            {
+                sb.AppendLine(book);
             }
             return sb.ToString().TrimEnd();
         }
