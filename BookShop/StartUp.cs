@@ -4,6 +4,7 @@
     using BookShop.Models.Enums;
     using Data;
     using Initializer;
+    using System.Globalization;
     using System.Linq;
     using System.Runtime.Serialization;
     using System.Text;
@@ -35,8 +36,17 @@
             Console.WriteLine(resultTask5);*/
 
             //Task 6 - Book Titles by Category
-            string resultTask6 = GetBooksByCategory(db,Console.ReadLine());
-            Console.WriteLine(resultTask6);
+            /*string resultTask6 = GetBooksByCategory(db,Console.ReadLine());
+            Console.WriteLine(resultTask6);*/
+
+            //Task 7 - Released Before Date
+            //string date = "12-04-2000";
+            //string dateinBase = "22-03-2001";
+            //DateTime date1 = DateTime.ParseExact(date, "dd-MM-yyyy",CultureInfo.InvariantCulture);
+           // DateTime dateinBase1 = DateTime.ParseExact(dateinBase, "dd-MM-yyyy", CultureInfo.InvariantCulture);
+           // Console.WriteLine(date1>dateinBase1);
+            string resultTask7 = GetBooksReleasedBefore(db, Console.ReadLine());
+            Console.WriteLine(resultTask7);
 
         }
         public static string GetBooksByAgeRestriction(BookShopContext context, string command)
@@ -119,6 +129,32 @@
                 sb.AppendLine(book);
             }
             return sb.ToString().TrimEnd();
+        }
+
+        public static string GetBooksReleasedBefore(BookShopContext context, string date)
+        {
+            var dateToWorkWith = DateTime.ParseExact(date, "dd-MM-yyyy", CultureInfo.InvariantCulture);
+
+            var books = context.Books
+                .Where(b => b.ReleaseDate < dateToWorkWith)
+                .OrderByDescending(b=>b.ReleaseDate)
+                .Select(b => new
+                {
+                    b.Title,
+                    edition = b.EditionType.ToString(),
+                    b.Price,
+                    b.ReleaseDate
+                })
+                .ToArray();
+            
+            StringBuilder sb = new();
+
+            foreach (var book in books)
+            {
+                sb.AppendLine($"{book.Title} - {book.edition} - ${book.Price:f2}");
+            }
+
+            return sb .ToString().TrimEnd();
         }
     }
 }
